@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+Copyright 2016 Anders Granau Høfft
+
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+ -->
+
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>com.hervian</groupId>
+	<artifactId>lambda-factory</artifactId>
+	<version>1.0.0-alpha-SNAPSHOT</version>
+	<packaging>jar</packaging>
+
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<maven.compiler.source>1.8</maven.compiler.source>
+		<maven.compiler.target>1.8</maven.compiler.target>
+	</properties>
+
+	<dependencies>
+		<dependency>
+			<groupId>com.googlecode.combinatoricslib</groupId>
+			<artifactId>combinatoricslib</artifactId>
+			<version>2.1</version>
+		</dependency>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.12</version>
+		</dependency>
+	</dependencies>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId> <!-- https://maven.apache.org/plugins/maven-compiler-plugin/compile-mojo.html -->
+				<version>2.3.2</version>
+				<executions> <!--https://issues.apache.org/jira/browse/MCOMPILER-97 -->
+					<execution>
+						<id>default-compile</id>
+						<!-- phase and goal is inherited from the super pom for the default-compile (and are compile) -->
+						<configuration>
+							<compilerArgument>-proc:none</compilerArgument>
+							<includes>
+								<include>com/hervian/lambda/MethodParameter.java</include>
+								<include>com/hervian/lambda/GenerateLambda.java</include>
+								<include>com/hervian/lambda/GenerateLambdaProcessor.java</include>
+							</includes>
+						</configuration>
+					</execution>
+					<execution>
+						<id>compile-markerclass-and-process-annotation</id>
+						<phase>compile</phase>
+						<goals>
+							<goal>compile</goal>
+						</goals>
+						<configuration>
+							<annotationProcessors>
+								<annotationProcessor>com.hervian.lambda.GenerateLambdaProcessor</annotationProcessor>
+							</annotationProcessors>
+							<!-- <generatedSourcesDirectory>default is ${project.build.directory}/generated-sources/annotations</generatedSourcesDirectory> -->
+							<includes>
+								<include>com/hervian/lambda/GenerateLambdaMarkerClass.java</include>
+							</includes>
+						</configuration>
+					</execution>
+					<execution>
+						<id>compile-everything-else</id>
+						<phase>compile</phase>
+						<goals>
+							<goal>compile</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
+
+</project>
