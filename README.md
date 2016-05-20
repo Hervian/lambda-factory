@@ -11,6 +11,9 @@ Parameters|Lambda|Direct|Reflection
 --- | --- | --- | ---
     (int, int)	 | 0.02s| 0.01s| 4.64s
  (Object, int)	 | 0.03s| 0.02s| 3.23s
+ 
+ *Disclaimer*: This is a hobby project. I do not pretend to be an expert, rather I try to increase my knowledge about Java and programming in general. My knowledge of LambdaMetafactory comes solely from javadoc, experiments and, not least, the many answers on stackoverflow from a german user called Holger. Though I have released this project there are many unsolved issues. For example, I do not in the time of writing have an overview of the memory consumptions of the lambda-factory - will an application that replaces Method.invoke with Lambda.invoke run into an OutOfMemory error sooner ( - all those generated classes...)? Is it really the case that the dynamically generated Lambda implementations only implement 1 (or so) method from the Lambda interface?  
+ 
 
 ## Requirements
 lambda-factory requires Java 1.8 or later.
