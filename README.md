@@ -11,9 +11,6 @@ Parameters|Lambda|Direct|Reflection
 --- | --- | --- | ---
     (int, int)	 | 0.02s| 0.01s| 4.64s
  (Object, int)	 | 0.03s| 0.02s| 3.23s
- 
- *Disclaimer*: This is a hobby project. I do not pretend to be an expert, rather I try to increase my knowledge about Java and programming in general. My knowledge of LambdaMetafactory comes solely from javadoc, experiments and, not least, the many answers on stackoverflow from a german user called Holger. Though I have released this project there are many unsolved issues. For example, I do not in the time of writing have an overview of the memory consumptions of the lambda-factory - will an application that replaces Method.invoke with Lambda.invoke run into an OutOfMemory error sooner ( - all those generated classes...)? Is it really the case that the dynamically generated Lambda implementations only implement 1 (or so) method from the Lambda interface?  
- 
 
 ## Requirements
 lambda-factory requires Java 1.8 or later.
@@ -114,3 +111,6 @@ It is also tempting to create a central varargs based `invoke(Object...)` method
 Method overloading on methods differing on return type only is actually possible in the byte code - the JVM fully accepts this ( - see fx 'covariant return type'). Only, one cannot compile such code, - the byte code must be created without compiling from source code.  
 Could this be used to create a "common" invoke(...) method (instead of `invoke_for_<return-type>`)?  
 It would be challenging. Say we generated the Lambda interface directly as byte code, and all methods were called `invoke`. How should the compiler know what to compile, when a caller _calls_ invoke(...)? If the return type is used, ie assigned to some variable then _perhaps_ the compiler can choose the correct overloaded method. I suspect, though, that some "ambiguious method call" error would be thrown.
+
+### Disclaimer
+This is a hobby project. I do not pretend to be an expert, rather I try to increase my knowledge about Java and programming in general. My knowledge of LambdaMetafactory comes solely from javadoc, experiments and, not least, the many answers on stackoverflow from a german user called Holger. Though I have released this project there are many unsolved issues. For example, I do not in the time of writing have an overview of the memory consumptions of the lambda-factory - will an application that replaces Method.invoke with Lambda.invoke run into an OutOfMemory error sooner ( - all those generated classes...)? Is it really the case that the dynamically generated Lambda implementations only implement 1 (or so) method from the Lambda interface? 
