@@ -46,16 +46,21 @@ Notice that when invoking the lambda, you must choose an invocation method that 
 * `invoke_for_double`
 
 Remember not to rely on autoboxing when passing arguments to the invocation method. If your method expects an Integer, and you pass an int, you will get an ´AbstractMethodException´.  
-There are 4 `create(...)` methods:
+There are 8 `create(...)` methods:
 
 * `Lambda create(Method method)`
 * `Lambda create(Method method, MethodHandles.Lookup lookup)`
 * `T create(Method method, Class<T> interface, String interfaceMethodName)`
 * `T create(Method method, MethodHandles.Lookup lookup, Class<T> interface, String interfaceMethodName)` 
+* `createSpecial(...)` - each of the create methods come in a "createSpecial" variant. See explanation below. 
 
 The method `create(Method method)` creates a Lambda with the same access rights as a Method with `setAccessible()==true`. That is, both private, package, protected and public methods are accessible to the created Lambda.  
 The method `create(Method method, MethodHandles.Lookup lookup)` creates a Lambda that has the access rights of the argument provided Lookup. The lookup's acceess rights reflect the class, which created it. To access private methods of a class using this constructor, the Lookup must either have been created in the given class, or the Method must have `setAccessible()==true`. Create a Lookup like this: `MethodHandles.lookup()`.  
-The signatures that accept an interface class can be used if one wishes to create a dynamic implementation of some other interface than the default Lambda.
+The signatures that accept an interface class can be used if one wishes to create a dynamic implementation of some other interface than the default Lambda.  
+The `createSpecial` variants create a Lambda that will _not_ be subject to dynamic method dispatch.  
+Example:  
+Let class A implement a method called 'someMethod'. And let class B extend A and override 'someMethod'.  
+Then, calling {@link #createSpecial(Method)} with a Method object referring to A.someMethod, will return a Lambda that calls A.someMethod, even when invoked with B as the instance.
 
 This is the price we pay for the speed:  
 * We have no single varargs based invocation method as in Reflection. Instead, we have one for every combination of parameters (primitives, Object + void) up until some maximum (see _Implementation comments_ section). 
@@ -113,4 +118,4 @@ Could this be used to create a "common" invoke(...) method (instead of `invoke_f
 It would be challenging. Say we generated the Lambda interface directly as byte code, and all methods were called `invoke`. How should the compiler know what to compile, when a caller _calls_ invoke(...)? If the return type is used, ie assigned to some variable then _perhaps_ the compiler can choose the correct overloaded method. I suspect, though, that some "ambiguious method call" error would be thrown.
 
 ### Disclaimer
-This is a hobby project. I do not pretend to be an expert, rather I try to increase my knowledge about Java and programming in general. My knowledge of LambdaMetafactory comes solely from javadoc, experiments and, not least, the many answers on stackoverflow from a german user called Holger. Though I have released this project there are many unsolved issues. For example, I do not in the time of writing have an overview of the memory consumptions of the lambda-factory - will an application that replaces Method.invoke with Lambda.invoke run into an OutOfMemory error sooner ( - all those generated classes...)? Is it really the case that the dynamically generated Lambda implementations only implement 1 (or so) method from the Lambda interface? 
+This is a hobby project. I do not pretend to be an expert, rather I try to increase my knowledge about Java and programming in general. My knowledge of LambdaMetafactory comes solely from javadoc, experiments and, not least, the many answers on stackoverflow from a german user called Holger.
