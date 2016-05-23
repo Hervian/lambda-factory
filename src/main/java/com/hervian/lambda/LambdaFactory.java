@@ -53,9 +53,26 @@ public class LambdaFactory {
 	 * @throws Throwable
 	 */
 	public static Lambda create(Method method) throws Throwable {
+	 return privateCreate(method, false);
+	}
+	
+	 /**
+	  * Same as {@link #create(Method)} except that this method returns a Lambda that will <em>not</em> be subject to dynamic method dispatch.
+	  * <p>Example:
+	  * <br>Let class A implement a method called 'someMethod'. And let class B extend A and override 'someMethod'.
+	  * <br>Then, calling {@link #createSpecial(Method)} with a Method object referring to A.someMethod, will return a Lambda 
+	  * that calls A.someMethod, even when invoked with B as the instance.
+	  */
+	public static Lambda createSpecial(Method method) throws Throwable {
+		return privateCreate(method, true);
+	}
+	
+	private static Lambda privateCreate(Method method, boolean createSpecial) throws Throwable {
 		Class<?> returnType = method.getReturnType();
 		String signatureName = GenerateLambdaProcessor.getMethodName(returnType.getSimpleName());
-		return LambdaFactory.create(method, Lambda.class, signatureName);
+		return createSpecial 
+				? createSpecial(method, Lambda.class, signatureName)
+				: create(method, Lambda.class, signatureName);
 	}
 
 	/**
@@ -71,9 +88,21 @@ public class LambdaFactory {
 	 * @throws Throwable
 	 */
 	public static Lambda create(Method method, MethodHandles.Lookup lookup) throws Throwable {
+		return create(method, lookup, false);
+	}
+	
+	/**
+	 * Same as {@link #create(Method, java.lang.invoke.MethodHandles.Lookup)} except that this method returns a Lambda that will <em>not</em> be subject to dynamic method dispatch.
+	 * See {@link #createSpecial(Method)}
+	 */
+	public static Lambda createSpecial(Method method, MethodHandles.Lookup lookup) throws Throwable {
+		return create(method, lookup, true);
+	}
+	
+	private static Lambda create(Method method, MethodHandles.Lookup lookup, boolean invokeSpecial) throws Throwable {
 		Class<?> returnType = method.getReturnType();
 		String signatureName = GenerateLambdaProcessor.getMethodName(returnType.getSimpleName());
-		return LambdaFactory.createLambda(method, lookup, Lambda.class, signatureName);
+		return createLambda(method, lookup, Lambda.class, signatureName, invokeSpecial);
 	}
 	
 	/**
@@ -93,9 +122,21 @@ public class LambdaFactory {
 	 * @throws Throwable
 	 */
 	public static <T> T create(Method method, Class<T> interfaceClass, String signatatureName) throws Throwable {
+		return create(method, interfaceClass, signatatureName, false);
+	}
+	
+	/**
+	 * Same as {@link #create(Method)} except that this method returns a Lambda that will <em>not</em> be subject to dynamic method dispatch.
+	 * See {@link #createSpecial(Method)}
+	 */
+	public static <T> T createSpecial(Method method, Class<T> interfaceClass, String signatatureName) throws Throwable {
+		return create(method, interfaceClass, signatatureName, true);
+	}
+	
+	private static <T> T create(Method method, Class<T> interfaceClass, String signatureName, boolean invokeSpecial) throws Throwable {
 		MethodHandles.Lookup lookup = MethodHandles.lookup().in(method.getDeclaringClass());
 		setAccessible(lookup);
-		return privateCreateLambda(method, lookup, interfaceClass, signatatureName);
+		return createLambda(method, lookup, interfaceClass, signatureName, invokeSpecial);
 	}
 	
 	/**
@@ -108,12 +149,20 @@ public class LambdaFactory {
 	 * @return
 	 * @throws Throwable
 	 */
-	public static <T> T createLambda(Method method, MethodHandles.Lookup lookup, Class<T> interfaceClass, String signatatureName) throws Throwable {
+	public static <T> T create(Method method, MethodHandles.Lookup lookup, Class<T> interfaceClass, String signatatureName) throws Throwable {
+		return createLambda(method, lookup, interfaceClass, signatatureName, false);
+	}
+	
+	public static <T> T createSpecial(Method method, MethodHandles.Lookup lookup, Class<T> interfaceClass, String signatatureName) throws Throwable {
+		return createLambda(method, lookup, interfaceClass, signatatureName, true);
+	}
+	
+	public static <T> T createLambda(Method method, MethodHandles.Lookup lookup, Class<T> interfaceClass, String signatatureName, boolean createSpecial) throws Throwable {
 		if (method.isAccessible()){
 			lookup = lookup.in(method.getDeclaringClass());
 			setAccessible(lookup);
 		}
-		return privateCreateLambda(method, lookup, interfaceClass, signatatureName);
+		return privateCreateLambda(method, lookup, interfaceClass, signatatureName, createSpecial);
 	}
 	
 	/**
@@ -135,8 +184,8 @@ public class LambdaFactory {
 	 * @return An instance of the argument provided interface, which implements only 1 of the interface's methods, namely the one whose signature matches the methods, we are create fast access to.
 	 * @throws Throwable
 	 */
-	private static <T> T privateCreateLambda(Method method, MethodHandles.Lookup lookup, Class<T> interfaceClass, String signatureName) throws Throwable {
-		MethodHandle methodHandle = lookup.unreflect(method);
+	private static <T> T privateCreateLambda(Method method, MethodHandles.Lookup lookup, Class<T> interfaceClass, String signatureName, boolean createSpecial) throws Throwable {
+		MethodHandle methodHandle = createSpecial? lookup.unreflectSpecial(method, method.getDeclaringClass()) : lookup.unreflect(method);
 		MethodType instantiatedMethodType = methodHandle.type();
 		MethodType signature = createLambdaMethodType(method, instantiatedMethodType);
 

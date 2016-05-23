@@ -297,7 +297,6 @@ public class PerformanceTest {
 	}
 	
 	private static void test_intArray(boolean warmup) throws Throwable{
-//		MethodParameter param = MethodParameter.OBJECT;
 		int[][] results = new int[3][3];
 		int[] arg = new int[3];
 		Method method = PerformanceTest.class.getDeclaredMethod("staticMethod", int[].class, int.class);
