@@ -56,6 +56,12 @@ public class PerformanceTest {
 	protected static short 		staticMethod(short a, int b)	{ return (short) (a > b ? a : b); }
 	protected static byte 		staticMethod(byte a, int b)		{ return (byte) (a > b ? a : b); }
 	protected static String 	staticMethod(Object a, int b)	{ return b>((String)a).length() ? "y" : "n"; }
+	protected static int[] 		staticMethod(int[] a, int b)	{ 
+		if (a[0] < b) {
+			a[0]++; 
+		}
+		return a;
+	}
 	
 	protected void instanceMethod(int a){}
 	protected void instanceMethod(char a){}
@@ -91,6 +97,7 @@ public class PerformanceTest {
 		test_long(warmup);
 		test_double(warmup);
 		test_Object(warmup);
+		test_intArray(warmup);
 		
 		float result = 0;
 		for (float ratio : lambdaOverDirect){
@@ -289,9 +296,34 @@ public class PerformanceTest {
 		lambdaOverDirect[8] = (float) (t1-t0)/ (t2-t1);
 	}
 	
+	private static void test_intArray(boolean warmup) throws Throwable{
+//		MethodParameter param = MethodParameter.OBJECT;
+		int[][] results = new int[3][3];
+		int[] arg = new int[3];
+		Method method = PerformanceTest.class.getDeclaredMethod("staticMethod", int[].class, int.class);
+		Lambda lambda = LambdaFactory.create(method, MethodHandles.lookup());
+		long t0 = System.nanoTime();
+		for (int i = 0; i < (warmup ? WARM_UP : ITERATIONS); i++)
+			results[0] = (int[]) lambda.invoke_for_Object(arg, i);
+		long t1 = System.nanoTime();
+		for (int i = 0; i < (warmup ? WARM_UP : ITERATIONS); i++)
+			results[1] = staticMethod(arg, i);
+		long t2 = System.nanoTime();
+		for (int i = 0; i < (warmup ? WARM_UP : ITERATIONS); i++)
+			results[2] = (int[]) method.invoke(null, arg, i);
+		long t3 = System.nanoTime();
+		if (!warmup)
+			printPerformance(int[].class.getSimpleName(), t0, t1, t2, t3);
+		lambdaOverDirect[8] = (float) (t1-t0)/ (t2-t1);
+	}
+	
 	private static void printPerformance(MethodParameter param, long t0, long t1, long t2, long t3) {
+		printPerformance(param.getType().getSimpleName(), t0, t1, t2, t3);
+	}
+	
+	private static void printPerformance(String firstArgSimpleName, long t0, long t1, long t2, long t3) {
 		System.out.printf("%1$26s\t %2$8s \tLambda: %3$.2fs, Direct: %4$.2fs, Reflection: %5$.2fs%n", 
-				"staticMethod("+param.getType().getSimpleName()+", int)",":"+param.getType().getSimpleName(), (t1 - t0) * 1e-9, (t2 - t1) * 1e-9, (t3 - t2) * 1e-9);
+				"staticMethod("+firstArgSimpleName+", int)",":"+firstArgSimpleName, (t1 - t0) * 1e-9, (t2 - t1) * 1e-9, (t3 - t2) * 1e-9);
 	}
 	
 	
