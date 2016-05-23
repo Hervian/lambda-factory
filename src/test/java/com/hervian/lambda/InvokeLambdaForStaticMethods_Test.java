@@ -42,42 +42,47 @@ public class InvokeLambdaForStaticMethods_Test {
 	protected static void staticMethod(short a){}
 	protected static void staticMethod(byte a){}
 	protected static void staticMethod(Object a){}
-	
+	protected static void staticMethod(String... a){}
 	
 	
 	@Test
 	public void testInvokeStaticMethod_ForAllArgumentTypes() throws Throwable{
-		for (MethodParameter param : MethodParameter.values()){
+		for (MethodParameter param : MethodParameter.values()) {
 			Method method = InvokeLambdaForStaticMethods_Test.class.getDeclaredMethod("staticMethod", param.getType());
 			Lambda lambda = LambdaFactory.create(method);
-			if (param.getType()==boolean.class){
+			switch (param) {
+			case BYTE:
+				lambda.invoke_for_void((byte) 127);
+				break;
+			case CHAR:
+				lambda.invoke_for_void('c');
+				break;
+			case DOUBLE:
+				lambda.invoke_for_void(3452d);
+				break;
+			case FLOAT:
+				lambda.invoke_for_void(345.45f);
+				break;
+			case INT:
+				lambda.invoke_for_void(2147483647);
+				break;
+			case LONG:
+				lambda.invoke_for_void(3147483647l);
+				break;
+			case OBJECT:
+				lambda.invoke_for_void(SOME_STRING);
+				break;
+			case SHORT:
+				lambda.invoke_for_void((short) 32767);
+				break;
+			case BOOLEAN:
 				lambda.invoke_for_void(true);
-			} else {
-				switch (param) {
-				case BYTE:
-					lambda.invoke_for_void((byte)127); break;
-				case CHAR:
-					lambda.invoke_for_void('c'); break;
-				case DOUBLE:
-					lambda.invoke_for_void(3452d); break;
-				case FLOAT:
-					lambda.invoke_for_void(345.45f); break;
-				case INT:
-					lambda.invoke_for_void(2147483647); break;
-				case LONG:
-					lambda.invoke_for_void(3147483647l); break;
-				case OBJECT:
-					lambda.invoke_for_void(SOME_STRING); break;
-				case SHORT:
-					lambda.invoke_for_void((short)32767); break;
-				default:
-					throw new UnsupportedOperationException("It appears this test is incomplete - all types should be tested.");
-				}
+				break;
+			default:
+				throw new UnsupportedOperationException("It appears this test is incomplete - all types should be tested.");
 			}
 		}
-	}
-	
-	
+	}	
 	
 	@Test
 	public void testInvokeStaticMethod_ForObject() throws Throwable {
@@ -86,9 +91,6 @@ public class InvokeLambdaForStaticMethods_Test {
 		
 		lambda.invoke_for_void("some string");
 	}
-	
-	
-	
 	
 
 }
