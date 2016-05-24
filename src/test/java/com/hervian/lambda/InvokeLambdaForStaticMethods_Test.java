@@ -92,5 +92,13 @@ public class InvokeLambdaForStaticMethods_Test {
 		lambda.invoke_for_void("some string");
 	}
 	
+	@Test
+	public void testInvokeStaticMethod_ForVarArgsOfStrings() throws Throwable {
+		Method method = InvokeLambdaForStaticMethods_Test.class.getDeclaredMethod("staticMethod", String[].class);
+		Lambda lambda = LambdaFactory.create(method);
+		
+		lambda.invoke_for_void(new String[]{"some string", "another string"});
+	}
+	
 
 }
