@@ -20,7 +20,7 @@ Copyright 2016 Anders Granau Høfft
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.hervian</groupId>
 	<artifactId>lambda-factory</artifactId>
-	<version>2.0.1</version>
+	<version>2.0.2-SNAPSHOT</version>
 	<packaging>jar</packaging>
 
 	<properties>
