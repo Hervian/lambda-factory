@@ -171,7 +171,7 @@ public class LambdaFactory {
 	 * The lambda will implement the argument provided interface.
 	 * <br>
 	 * This interface is expected to contain a signature that matches the method, for which we are creating the lambda.
-	 * In the context of the lambda-factory project, this interface will always be the samem, namely an auto-generate interface
+	 * In the context of the lambda-factory project, this interface will always be the same, namely an auto-generate interface
 	 * with abstract methods for all combinations of primitives + Object (up until some max number of arguments.)
 	 * <p>
 	 * 
