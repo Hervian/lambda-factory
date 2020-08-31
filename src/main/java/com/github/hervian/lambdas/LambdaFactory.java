@@ -29,7 +29,7 @@ import java.lang.reflect.Modifier;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  * END OF NOTICE
- * 
+ *
  * In essence, this class simply wraps the functionality of {@link LambdaMetafactory#metafactory(java.lang.invoke.MethodHandles.Lookup, String, MethodType, MethodType, MethodHandle, MethodType)}.
  * <br>
  * However, some additional logic is needed to handle the case of 
@@ -41,7 +41,7 @@ import java.lang.reflect.Modifier;
  * @author Anders Granau Høfft
  */
 public class LambdaFactory {
-		
+
 	/**
 	 * creates a Lambda with the same access rights as a Method with setAccessible()==true. 
 	 * That is, both private, package, protected and public methods are accessible to the created Lambda.
@@ -51,34 +51,37 @@ public class LambdaFactory {
 	 * @throws Throwable
 	 */
 	public static Lambda create(Method method) throws Throwable {
-	 return privateCreate(method, false);
+		return privateCreate(method, false);
 	}
-	
-	 /**
-	  * Same as {@link #create(Method)} except that this method returns a Lambda that will <em>not</em> be subject to dynamic method dispatch.
-	  * <p>Example:
-	  * <br>Let class A implement a method called 'someMethod'. And let class B extend A and override 'someMethod'.
-	  * <br>Then, calling {@link #createSpecial(Method)} with a Method object referring to A.someMethod, will return a Lambda 
-	  * that calls A.someMethod, even when invoked with B as the instance.
-	  */
+
+	/**
+	 * Same as {@link #create(Method)} except that this method returns a Lambda that will <em>not</em> be subject to dynamic method dispatch.
+	 * <p>Example:
+	 * <br>Let class A implement a method called 'someMethod'. And let class B extend A and override 'someMethod'.
+	 * <br>Then, calling {@link #createSpecial(Method)} with a Method object referring to A.someMethod, will return a Lambda
+	 * that calls A.someMethod, even when invoked with B as the instance.
+	 * @param method
+	 * @return
+	 * @throws Throwable
+	 */
 	public static Lambda createSpecial(Method method) throws Throwable {
 		return privateCreate(method, true);
 	}
-	
+
 	private static Lambda privateCreate(Method method, boolean createSpecial) throws Throwable {
 		Class<?> returnType = method.getReturnType();
 		String signatureName = GenerateLambdaProcessor.getMethodName(returnType.getSimpleName());
-		return createSpecial 
+		return createSpecial
 				? createSpecial(method, Lambda.class, signatureName)
 				: create(method, Lambda.class, signatureName);
 	}
-	
+
 	private static Lambda create(Method method, MethodHandles.Lookup lookup, boolean invokeSpecial) throws Throwable {
 		Class<?> returnType = method.getReturnType();
 		String signatureName = GenerateLambdaProcessor.getMethodName(returnType.getSimpleName());
 		return createLambda(method, lookup, Lambda.class, signatureName, invokeSpecial);
 	}
-	
+
 	/**
 	 * Similar to {@link #create(Method)}, except that this factory method returns a dynamically generated 
 	 * implementation of the argument provided interface.
@@ -98,45 +101,35 @@ public class LambdaFactory {
 	public static <T> T create(Method method, Class<T> interfaceClass, String signatatureName) throws Throwable {
 		return create(method, interfaceClass, signatatureName, false);
 	}
-	
+
 	/**
-	 * Same as {@link #create(Method)} except that this method returns a Lambda that will <em>not</em> be subject to dynamic method dispatch.
-	 * See {@link #createSpecial(Method)}
+	 * * Same as {@link #create(Method)} except that this method returns a Lambda that will <em>not</em> be subject to dynamic method dispatch.
+	 * 	 * See {@link #createSpecial(Method)}
+	 * @param method
+	 * @param interfaceClass
+	 * @param signatatureName
+	 * @param <T>
+	 * @return
+	 * @throws Throwable
 	 */
 	public static <T> T createSpecial(Method method, Class<T> interfaceClass, String signatatureName) throws Throwable {
 		return create(method, interfaceClass, signatatureName, true);
 	}
-	
+
 	private static <T> T create(Method method, Class<T> interfaceClass, String signatureName, boolean invokeSpecial) throws Throwable {
 		MethodHandles.Lookup lookup = MethodHandles.privateLookupIn(method.getDeclaringClass(), MethodHandles.lookup());
 		return createLambda(method, lookup, interfaceClass, signatureName, invokeSpecial);
 	}
-	
-	/**
-	 * Same as {@link #create(Method, Class, String)}, but with an additional parameter in the form of a Lookup object.
-	 * See {@link #create(Method, java.lang.invoke.MethodHandles.Lookup)} for a description of the Lookup parameter.
-	 * @param method
-	 * @param lookup
-	 * @param interfaceClass
-	 * @param signatatureName
-	 * @return
-	 * @throws Throwable
-	 */
-	public static <T> T create(Method method, MethodHandles.Lookup lookup, Class<T> interfaceClass, String signatatureName) throws Throwable {
-		return createLambda(method, lookup, interfaceClass, signatatureName, false);
-	}
-	
-	public static <T> T createSpecial(Method method, MethodHandles.Lookup lookup, Class<T> interfaceClass, String signatatureName) throws Throwable {
-		return createLambda(method, lookup, interfaceClass, signatatureName, true);
-	}
-	
-	public static <T> T createLambda(Method method, MethodHandles.Lookup lookup, Class<T> interfaceClass, String signatatureName, boolean createSpecial) throws Throwable {
+
+	private static <T> T createLambda(Method method, MethodHandles.Lookup lookup, Class<T> interfaceClass, String signatatureName, boolean createSpecial) throws Throwable {
 		lookup = lookup.in(method.getDeclaringClass());
 		return privateCreateLambda(method, lookup, interfaceClass, signatatureName, createSpecial);
 	}
-	
+
+
 	/**
-	 * This method uses {@link LambdaMetafactory} to create a lambda. 
+	 *
+	 * This method uses {@link LambdaMetafactory} to create a lambda.
 	 * <br>
 	 * The lambda will implement the argument provided interface.
 	 * <br>
@@ -144,14 +137,14 @@ public class LambdaFactory {
 	 * In the context of the lambda-factory project, this interface will always be the same, namely an auto-generate interface
 	 * with abstract methods for all combinations of primitives + Object (up until some max number of arguments.)
 	 * <p>
-	 * 
+	 *
 	 * @param method The {@link Method} we are trying to create "direct invocation fast" access to.
-	 * @param setAccessible a boolean flag indicating whether or not the returned lambda shall force access private methods. 
-	 * This corresponds to {@link Method#setAccessible(boolean)}. 
-	 * @param interfaceClass The interface, which the created lambda will implement. 
-	 * In the context of the lambda-factory project this will always be the same, namely a compile time auto-generated interface. See {@link GenerateLambdaProcessor}.
-	 * @param the name of the method from the interface, which shall be implemented. This argument exists for the sake of jUnit testing.
-	 * @return An instance of the argument provided interface, which implements only 1 of the interface's methods, namely the one whose signature matches the methods, we are create fast access to.
+	 * @param lookup
+	 * @param interfaceClass The interface, which the created lambda will implement. In the context of the lambda-factory project this will always be the same, namely a compile time auto-generated interface. See {@link GenerateLambdaProcessor}.
+	 * @param signatureName
+	 * @param createSpecial
+	 * @param <T>
+	 * @return An instance of the argument provided interface, which implements only 1 of the interface's methods, namely the one whose signature matches the method, we are creating fast access to.
 	 * @throws Throwable
 	 */
 	private static <T> T privateCreateLambda(Method method, MethodHandles.Lookup lookup, Class<T> interfaceClass, String signatureName, boolean createSpecial) throws Throwable {
@@ -177,18 +170,18 @@ public class LambdaFactory {
 		if (Object.class.isAssignableFrom(signature.returnType())){
 			signature = signature.changeReturnType(Object.class);
 		}
-		
+
 		return signature;
 	}
 
 	private static CallSite createCallSite(String signatureName, MethodHandles.Lookup lookup, MethodHandle methodHandle,
-			MethodType instantiatedMethodType, MethodType signature, Class<?> interfaceClass) throws LambdaConversionException {
+										   MethodType instantiatedMethodType, MethodType signature, Class<?> interfaceClass) throws LambdaConversionException {
 		return LambdaMetafactory.metafactory(
-				lookup, 
+				lookup,
 				signatureName,
-				MethodType.methodType(interfaceClass), 
-				signature, 
-				methodHandle, 
+				MethodType.methodType(interfaceClass),
+				signature,
+				methodHandle,
 				instantiatedMethodType);
 	}
 
