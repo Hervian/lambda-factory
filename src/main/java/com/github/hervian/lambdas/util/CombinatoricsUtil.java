@@ -5,7 +5,7 @@ import java.util.List;
 
 public class CombinatoricsUtil {
 
-  public static <T> List<List<T>> createPermutationsWithRepetitionsRecursively(List<T> list, int chooseK){
+  static <T> List<List<T>> createPermutationsWithRepetitionsRecursively(List<T> list, int chooseK){
     List<List<T>> res = new ArrayList<>();
     if (chooseK<1){
       res.add(new ArrayList<>());

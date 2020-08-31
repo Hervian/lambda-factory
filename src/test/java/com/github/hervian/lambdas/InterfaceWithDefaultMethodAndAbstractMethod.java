@@ -1,4 +1,4 @@
-package com.hervian.lambda.testmethods;
+package com.github.hervian.lambdas;
 
 public interface InterfaceWithDefaultMethodAndAbstractMethod {
 

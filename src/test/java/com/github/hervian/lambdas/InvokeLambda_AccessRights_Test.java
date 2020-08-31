@@ -1,15 +1,11 @@
-package com.hervian.lambda;
+package com.github.hervian.lambdas;
 
 import static org.junit.Assert.*;
 
-import java.lang.invoke.MethodHandles;
 import java.lang.reflect.Method;
 
 import com.github.hervian.lambdas.Lambda;
-import com.github.hervian.lambdas.LambdaFactory;
 import org.junit.Test;
-
-import com.hervian.lambda.testmethods.ClassWithPrivateAndProtectedMethodInSeparatePackage;
 
 /**
  * Copyright 2016 Anders Granau Høfft

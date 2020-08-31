@@ -1,13 +1,4 @@
-package com.hervian.lambda;
-
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-import java.util.function.IntBinaryOperator;
-
-import com.github.hervian.lambdas.LambdaFactory;
-import org.junit.Test;
-
-import junit.framework.TestCase;
+package com.github.hervian.lambdas;
 
 /**
  * Copyright 2016 Anders Granau Høfft
@@ -28,23 +19,22 @@ import junit.framework.TestCase;
  * @author Anders Granau Høfft
  *
  */
-public class LambdaFactoryTest extends TestCase {
+public class ClassWithPrivateAndProtectedMethodInSeparatePackage {
 
+	public static final String RESULT = "Some random string";
 	
-	@Test
-	public void test_create_forInterface() throws Throwable{
-		Method method = LambdaFactoryTest.class.getDeclaredMethod("staticIntMethod", int.class, int.class);
-		IntBinaryOperator sam = LambdaFactory.create(method, IntBinaryOperator.class, "applyAsInt");
-		
-		int result = sam.applyAsInt(3, 11);
-		
-		assertTrue(3+11==result);
+	@SuppressWarnings("unused")
+	private static String myMethod(){
+		return RESULT;
 	}
 	
 	@SuppressWarnings("unused")
-	private static int staticIntMethod(int a, int b){
+	private static int myMethod(int a, int b){
 		return a+b;
 	}
 	
+	protected static String protectedMethod(){
+		return RESULT;
+	}
 	
 }

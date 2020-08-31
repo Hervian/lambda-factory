@@ -1,10 +1,7 @@
-package com.hervian.lambda;
+package com.github.hervian.lambdas;
 
-import com.github.hervian.lambdas.Lambda;
-import com.github.hervian.lambdas.LambdaFactory;
 import com.github.hervian.lambdas.util.MethodParameter;
 
-import java.lang.invoke.MethodHandles;
 import java.lang.reflect.Method;
 
 /**

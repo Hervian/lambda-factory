@@ -1,9 +1,7 @@
-package com.hervian.lambda;
+package com.github.hervian.lambdas;
 
 import java.lang.reflect.Method;
 
-import com.github.hervian.lambdas.Lambda;
-import com.github.hervian.lambdas.LambdaFactory;
 import com.github.hervian.lambdas.util.MethodParameter;
 import org.junit.Test;
 
