@@ -1,4 +1,4 @@
-package com.hervian.lambda;
+package com.github.hervian.lambdas.util;
 
 /**
  * Copyright 2016 Anders Granau Høfft

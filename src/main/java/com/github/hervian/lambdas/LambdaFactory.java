@@ -1,4 +1,6 @@
-package com.hervian.lambda;
+package com.github.hervian.lambdas;
+
+import com.github.hervian.lambdas.util.GenerateLambdaProcessor;
 
 import java.lang.invoke.CallSite;
 import java.lang.invoke.LambdaConversionException;
@@ -6,7 +8,6 @@ import java.lang.invoke.LambdaMetafactory;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodType;
-import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 
@@ -40,9 +41,6 @@ import java.lang.reflect.Modifier;
  * @author Anders Granau Høfft
  */
 public class LambdaFactory {
-	
-	private static Field lookupClassAllowedModesField;
-	private static final int ALL_MODES = (MethodHandles.Lookup.PRIVATE | MethodHandles.Lookup.PROTECTED | MethodHandles.Lookup.PACKAGE | MethodHandles.Lookup.PUBLIC);
 		
 	/**
 	 * creates a Lambda with the same access rights as a Method with setAccessible()==true. 
@@ -73,30 +71,6 @@ public class LambdaFactory {
 		return createSpecial 
 				? createSpecial(method, Lambda.class, signatureName)
 				: create(method, Lambda.class, signatureName);
-	}
-
-	/**
-	 * Same as {@link #create(Method)} but with an extra parameter that allows for more fine grained configuration of the access rights
-	 * of the generated Lambda implementation.
-	 * The lookup's access rights reflect the class, which created it. 
-	 * To access private methods of a class using this constructor, the Lookup must either have been created in the given class, 
-	 * or the Method must have setAccessible()==true. Create a Lookup like this: MethodHandles.lookup().
-	 * @param method A Method object which defines what to invoke.
-	 * @param lookup A Lookup describing the access rights of the generated Lambda. Create a Lookup like this: MethodHandles.lookup().
-	 * @return A dynamically generated class that implements the Lambda interface and the a method that corresponds to the Method. 
-	 * The implementation offers invocation speed similar to that of a direct method invocation.
-	 * @throws Throwable
-	 */
-	public static Lambda create(Method method, MethodHandles.Lookup lookup) throws Throwable {
-		return create(method, lookup, false);
-	}
-	
-	/**
-	 * Same as {@link #create(Method, java.lang.invoke.MethodHandles.Lookup)} except that this method returns a Lambda that will <em>not</em> be subject to dynamic method dispatch.
-	 * See {@link #createSpecial(Method)}
-	 */
-	public static Lambda createSpecial(Method method, MethodHandles.Lookup lookup) throws Throwable {
-		return create(method, lookup, true);
 	}
 	
 	private static Lambda create(Method method, MethodHandles.Lookup lookup, boolean invokeSpecial) throws Throwable {
@@ -134,8 +108,7 @@ public class LambdaFactory {
 	}
 	
 	private static <T> T create(Method method, Class<T> interfaceClass, String signatureName, boolean invokeSpecial) throws Throwable {
-		MethodHandles.Lookup lookup = MethodHandles.lookup().in(method.getDeclaringClass());
-		setAccessible(lookup);
+		MethodHandles.Lookup lookup = MethodHandles.privateLookupIn(method.getDeclaringClass(), MethodHandles.lookup());
 		return createLambda(method, lookup, interfaceClass, signatureName, invokeSpecial);
 	}
 	
@@ -158,10 +131,7 @@ public class LambdaFactory {
 	}
 	
 	public static <T> T createLambda(Method method, MethodHandles.Lookup lookup, Class<T> interfaceClass, String signatatureName, boolean createSpecial) throws Throwable {
-		if (method.isAccessible()){
-			lookup = lookup.in(method.getDeclaringClass());
-			setAccessible(lookup);
-		}
+		lookup = lookup.in(method.getDeclaringClass());
 		return privateCreateLambda(method, lookup, interfaceClass, signatatureName, createSpecial);
 	}
 	
@@ -220,32 +190,6 @@ public class LambdaFactory {
 				signature, 
 				methodHandle, 
 				instantiatedMethodType);
-	}
-
-	static void setAccessible(MethodHandles.Lookup lookup) throws NoSuchFieldException, IllegalAccessException {
-		getLookupsModifiersField().set(lookup, ALL_MODES);
-	}
-
-	/**
-	 * * Enable access to private methods
-	 * Source: https://rmannibucau.wordpress.com/2014/03/27/java-8-default-interface-methods-and-jdk-dynamic-proxies/
-	 * @return
-	 * @throws NoSuchFieldException
-	 * @throws IllegalAccessException
-	 */
-	static Field getLookupsModifiersField() throws NoSuchFieldException, IllegalAccessException {
-		if (lookupClassAllowedModesField == null || !lookupClassAllowedModesField.isAccessible()) {
-			Field modifiersField = Field.class.getDeclaredField("modifiers");
-			modifiersField.setAccessible(true);
-
-			Field allowedModes = MethodHandles.Lookup.class.getDeclaredField("allowedModes");
-			allowedModes.setAccessible(true);
-			int modifiers = allowedModes.getModifiers();
-			modifiersField.setInt(allowedModes, modifiers & ~Modifier.FINAL); //Remove the final flag (~ performs a "bitwise complement" on a numerical value)
-			
-			lookupClassAllowedModesField = allowedModes;
-		}
-		return lookupClassAllowedModesField;
 	}
 
 }

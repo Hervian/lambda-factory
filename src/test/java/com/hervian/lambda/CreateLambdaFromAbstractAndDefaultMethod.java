@@ -4,6 +4,8 @@ import static org.junit.Assert.*;
 
 import java.lang.reflect.Method;
 
+import com.github.hervian.lambdas.Lambda;
+import com.github.hervian.lambdas.LambdaFactory;
 import org.junit.Test;
 
 import com.hervian.lambda.testmethods.InterfaceWithDefaultMethodAndAbstractMethod;

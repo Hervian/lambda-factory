@@ -4,6 +4,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.function.IntBinaryOperator;
 
+import com.github.hervian.lambdas.LambdaFactory;
 import org.junit.Test;
 
 import junit.framework.TestCase;
@@ -29,24 +30,6 @@ import junit.framework.TestCase;
  */
 public class LambdaFactoryTest extends TestCase {
 
-	@Test
-	public void test_getLookupsModifiersField_assertThatFieldIsOnlyInstantiatedOnce() throws NoSuchFieldException, IllegalAccessException{
-		Field lookupClassAllowedModesField = LambdaFactory.getLookupsModifiersField();
-		
-		assertNotNull(lookupClassAllowedModesField);
-		
-		Field lookupClassAllowedModesField2 = LambdaFactory.getLookupsModifiersField();
-		
-		assertTrue(lookupClassAllowedModesField==lookupClassAllowedModesField2);
-	}
-	
-	@Test
-	public void test_getLookupsModifiersField_assertThatFieldIsAccessible() throws NoSuchFieldException, IllegalAccessException{
-		Field lookupClassAllowedModesField = LambdaFactory.getLookupsModifiersField();
-		
-		assertNotNull(lookupClassAllowedModesField);
-		assertTrue(lookupClassAllowedModesField.isAccessible());
-	}
 	
 	@Test
 	public void test_create_forInterface() throws Throwable{

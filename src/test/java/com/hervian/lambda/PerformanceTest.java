@@ -1,5 +1,9 @@
 package com.hervian.lambda;
 
+import com.github.hervian.lambdas.Lambda;
+import com.github.hervian.lambdas.LambdaFactory;
+import com.github.hervian.lambdas.util.MethodParameter;
+
 import java.lang.invoke.MethodHandles;
 import java.lang.reflect.Method;
 
@@ -112,7 +116,7 @@ public class PerformanceTest {
 		boolean[] results = new boolean[3];
 		boolean arg = true;
 		Method method = PerformanceTest.class.getDeclaredMethod("staticMethod", param.getType(), int.class);
-		Lambda lambda = LambdaFactory.create(method, MethodHandles.lookup());
+		Lambda lambda = LambdaFactory.create(method);
 		long t0 = System.nanoTime();
 		for (int i = 0; i < (warmup ? WARM_UP : ITERATIONS); i++)
 			results[0] = results[0] || lambda.invoke_for_boolean(arg, i);
@@ -133,7 +137,7 @@ public class PerformanceTest {
 		byte[] results = new byte[3];
 		byte arg = SOME_BYTE;
 		Method method = PerformanceTest.class.getDeclaredMethod("staticMethod", param.getType(), int.class);
-		Lambda lambda = LambdaFactory.create(method, MethodHandles.lookup());
+		Lambda lambda = LambdaFactory.create(method);
 		long t0 = System.nanoTime();
 		for (int i = 0; i < (warmup ? WARM_UP : ITERATIONS); i++)
 			results[0] += lambda.invoke_for_byte(arg, i);
@@ -154,7 +158,7 @@ public class PerformanceTest {
 		char[] results = new char[3];
 		char arg = SOME_CHAR;
 		Method method = PerformanceTest.class.getDeclaredMethod("staticMethod", param.getType(), int.class);
-		Lambda lambda = LambdaFactory.create(method, MethodHandles.lookup());
+		Lambda lambda = LambdaFactory.create(method);
 		long t0 = System.nanoTime();
 		for (int i = 0; i < (warmup ? WARM_UP : ITERATIONS); i++)
 			results[0] += lambda.invoke_for_char(arg, i);
@@ -175,7 +179,7 @@ public class PerformanceTest {
 		short[] results = new short[3];
 		short arg = SOME_SHORT;
 		Method method = PerformanceTest.class.getDeclaredMethod("staticMethod", param.getType(), int.class);
-		Lambda lambda = LambdaFactory.create(method, MethodHandles.lookup());
+		Lambda lambda = LambdaFactory.create(method);
 		long t0 = System.nanoTime();
 		for (int i = 0; i < (warmup ? WARM_UP : ITERATIONS); i++)
 			results[0] += lambda.invoke_for_short(arg, i);
@@ -196,7 +200,7 @@ public class PerformanceTest {
 		int[] results = new int[3];
 		int arg = SOME_INT;
 		Method method = PerformanceTest.class.getDeclaredMethod("staticMethod", param.getType(), int.class);
-		Lambda lambda = LambdaFactory.create(method, MethodHandles.lookup());
+		Lambda lambda = LambdaFactory.create(method);
 		long t0 = System.nanoTime();
 		for (int i = 0; i < (warmup ? WARM_UP : ITERATIONS); i++)
 			results[0] += lambda.invoke_for_int(arg, i);
@@ -217,7 +221,7 @@ public class PerformanceTest {
 		float[] results = new float[3];
 		float arg = SOME_FLOAT;
 		Method method = PerformanceTest.class.getDeclaredMethod("staticMethod", param.getType(), int.class);
-		Lambda lambda = LambdaFactory.create(method, MethodHandles.lookup());
+		Lambda lambda = LambdaFactory.create(method);
 		long t0 = System.nanoTime();
 		for (int i = 0; i < (warmup ? WARM_UP : ITERATIONS); i++)
 			results[0] += lambda.invoke_for_float(arg, i);
@@ -238,7 +242,7 @@ public class PerformanceTest {
 		long[] results = new long[3];
 		long arg = SOME_LONG;
 		Method method = PerformanceTest.class.getDeclaredMethod("staticMethod", param.getType(), int.class);
-		Lambda lambda = LambdaFactory.create(method, MethodHandles.lookup());
+		Lambda lambda = LambdaFactory.create(method);
 		long t0 = System.nanoTime();
 		for (int i = 0; i < (warmup ? WARM_UP : ITERATIONS); i++)
 			results[0] += lambda.invoke_for_long(arg, i);
@@ -259,7 +263,7 @@ public class PerformanceTest {
 		double[] results = new double[3];
 		double arg = SOME_DOUBLE;
 		Method method = PerformanceTest.class.getDeclaredMethod("staticMethod", param.getType(), int.class);
-		Lambda lambda = LambdaFactory.create(method, MethodHandles.lookup());
+		Lambda lambda = LambdaFactory.create(method);
 		long t0 = System.nanoTime();
 		for (int i = 0; i < (warmup ? WARM_UP : ITERATIONS); i++)
 			results[0] += lambda.invoke_for_double(arg, i);
@@ -280,7 +284,7 @@ public class PerformanceTest {
 		String[] results = new String[3];
 		String arg = SOME_STRING;
 		Method method = PerformanceTest.class.getDeclaredMethod("staticMethod", param.getType(), int.class);
-		Lambda lambda = LambdaFactory.create(method, MethodHandles.lookup());
+		Lambda lambda = LambdaFactory.create(method);
 		long t0 = System.nanoTime();
 		for (int i = 0; i < (warmup ? WARM_UP : ITERATIONS); i++)
 			results[0] = (String) lambda.invoke_for_Object(arg, i);
@@ -300,7 +304,7 @@ public class PerformanceTest {
 		int[][] results = new int[3][3];
 		int[] arg = new int[3];
 		Method method = PerformanceTest.class.getDeclaredMethod("staticMethod", int[].class, int.class);
-		Lambda lambda = LambdaFactory.create(method, MethodHandles.lookup());
+		Lambda lambda = LambdaFactory.create(method);
 		long t0 = System.nanoTime();
 		for (int i = 0; i < (warmup ? WARM_UP : ITERATIONS); i++)
 			results[0] = (int[]) lambda.invoke_for_Object(arg, i);

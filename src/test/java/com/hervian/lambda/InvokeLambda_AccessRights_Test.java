@@ -5,6 +5,8 @@ import static org.junit.Assert.*;
 import java.lang.invoke.MethodHandles;
 import java.lang.reflect.Method;
 
+import com.github.hervian.lambdas.Lambda;
+import com.github.hervian.lambdas.LambdaFactory;
 import org.junit.Test;
 
 import com.hervian.lambda.testmethods.ClassWithPrivateAndProtectedMethodInSeparatePackage;
@@ -39,10 +41,10 @@ import com.hervian.lambda.testmethods.ClassWithPrivateAndProtectedMethodInSepara
  */
 public class InvokeLambda_AccessRights_Test extends ClassWithPrivateAndProtectedMethodInSeparatePackage {
 	
-	@Test (expected = IllegalAccessException.class)
-	public void test_Lambda_createWithLookup_setAccessibleIsFalse_Inaccessible() throws Throwable {
+	@Test
+	public void test_Lambda_createWithLookup_setAccessibleIsFalse() throws Throwable {
 		Method method = ClassWithPrivateAndProtectedMethodInSeparatePackage.class.getDeclaredMethod("myMethod");
-		Lambda lambda = LambdaFactory.create(method, MethodHandles.lookup());
+		Lambda lambda = LambdaFactory.create(method);
 		
 		lambda.invoke_for_Object();
 	}
@@ -50,7 +52,7 @@ public class InvokeLambda_AccessRights_Test extends ClassWithPrivateAndProtected
 	@Test
 	public void test_Lambda_createWithLookup_protectedMethod() throws Throwable {
 		Method method = ClassWithPrivateAndProtectedMethodInSeparatePackage.class.getDeclaredMethod("protectedMethod");
-		Lambda lambda = LambdaFactory.create(method, MethodHandles.lookup());
+		Lambda lambda = LambdaFactory.create(method);
 		
 		String result = (String) lambda.invoke_for_Object();
 		
@@ -71,7 +73,7 @@ public class InvokeLambda_AccessRights_Test extends ClassWithPrivateAndProtected
 	public void test_Lambda_createWithLookup_setAccessibleIsTrue() throws Throwable {
 		Method method = ClassWithPrivateAndProtectedMethodInSeparatePackage.class.getDeclaredMethod("myMethod");
 		method.setAccessible(true);
-		Lambda lambda = LambdaFactory.create(method, MethodHandles.lookup());
+		Lambda lambda = LambdaFactory.create(method);
 		
 		String invokeResult = (String) lambda.invoke_for_Object();
 		

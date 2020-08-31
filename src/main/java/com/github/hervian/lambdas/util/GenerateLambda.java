@@ -1,4 +1,9 @@
-package com.hervian.lambda;
+package com.github.hervian.lambdas.util;
+
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
  * Copyright 2016 Anders Granau Høfft
@@ -17,32 +22,13 @@ package com.hervian.lambda;
  * END OF NOTICE
  * 
  * @author Anders Granau Høfft
- *
  */
-enum MethodParameter {
+@Target(ElementType.TYPE)
+@Retention(RetentionPolicy.SOURCE)
+@interface GenerateLambda {
+
+  int maxNumberOfParameters();
   
-  BOOLEAN(boolean.class),
-  CHAR(char.class),
-  SHORT(short.class),
-  BYTE(byte.class),
-  INT(int.class),
-  FLOAT(float.class),
-  LONG(long.class),
-  DOUBLE(double.class),
-  OBJECT(Object.class);
-  
-  private Class<?> type;
-  
-  private MethodParameter(Class<?> type){
-    this.type = type;
-  }
-  
-  Class<?> getType(){
-    return type;
-  }
-  
-  String getTypeAsSourceCodeString(){
-    return getType().getSimpleName();
-  }
+  MethodParameter[] paramTypes();
   
 }

@@ -1,4 +1,4 @@
-package com.hervian.lambda;
+package com.github.hervian.lambdas.util;
 
 import java.io.IOException;
 import java.io.Writer;
@@ -18,10 +18,6 @@ import javax.lang.model.SourceVersion;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.TypeElement;
-
-import org.paukov.combinatorics.Factory;
-import org.paukov.combinatorics.Generator;
-import org.paukov.combinatorics.ICombinatoricsVector;
 
 /**
  * Copyright 2016 Anders Granau Høfft
@@ -52,7 +48,7 @@ public class GenerateLambdaProcessor extends AbstractProcessor {
 	private static final String NEWLINE_TAB = "\n\t";
 	private static final String NEWLINE = "\n";
 	private static final String INTERFACE_NAME = "Lambda";
-	private static final String PACKAGE = "com.hervian.lambda";
+	private static final String PACKAGE = "com.github.hervian.lambdas";
 	
 	static final String METHOD_NAME = "invoke_for_";	
 	private static final String METHOD_NAME_BOOLEAN 	= METHOD_NAME+boolean.class.getSimpleName();
@@ -126,7 +122,7 @@ public class GenerateLambdaProcessor extends AbstractProcessor {
 					+ "\n * The AbstractMethodException will also be thrown if the caller does not provide"
 					+ "\n * an Object instance as the first argument to a non-static method, and vice versa."
 					+ "\n * @author Anders Granau Høfft").append("\n */")
-							.append("\n@javax.annotation.Generated(value=\"com.hervian.lambda.GenerateLambdaProcessor\", date=\"").append(new Date()).append("\")")
+							.append("\n@javax.annotation.processing.Generated(value=\"com.github.hervian.lambdas.util.GenerateLambdaProcessor\", date=\"").append(new Date()).append("\")")
 							.append("\npublic interface " + className + "{\n");
 			generateAbstractandConcreteMethods(javaFile, generateSignatureContainerAnnotation);
 			javaFile.append("\n}");
@@ -144,49 +140,49 @@ public class GenerateLambdaProcessor extends AbstractProcessor {
 	}
 
 	private void generateAbstractMethods(StringBuilder javaFile, MethodParameter[] types, int maxNumberOfParams) {
-		List<String> returnTypes = Arrays.asList(types).stream().map(type -> type.getTypeAsSourceCodeString()).collect(Collectors.toList());
+		List<MethodParameter> typesList =  Arrays.asList(types);
+		List<String> returnTypes = typesList.stream().map(type -> type.getTypeAsSourceCodeString()).collect(Collectors.toList());
 		returnTypes.add("void");
-		ICombinatoricsVector<MethodParameter> originalVector = Factory.createVector(types);
-		generateInterfaceMethodsForStaticCallsWithMaxNumOfArgs(javaFile, originalVector, returnTypes, maxNumberOfParams + 1);
-		generateInterfaceMethodCombinationsRecursively(javaFile, originalVector, returnTypes, maxNumberOfParams);
+		//ICombinatoricsVector<MethodParameter> originalVector = CombinatoricsFactory.createVector(types);
+		generateInterfaceMethodsForStaticCallsWithMaxNumOfArgs(javaFile, typesList, returnTypes, maxNumberOfParams + 1);
+		generateInterfaceMethodCombinationsRecursively(javaFile, typesList, returnTypes, maxNumberOfParams);
 	}
 
-	private void generateInterfaceMethodsForStaticCallsWithMaxNumOfArgs(StringBuilder javaFile,
-			ICombinatoricsVector<MethodParameter> originalVector, List<String> returnTypes, int numberOfParams) {
-		Generator<MethodParameter> gen = Factory.createPermutationWithRepetitionGenerator(originalVector, numberOfParams);
+	private void generateInterfaceMethodsForStaticCallsWithMaxNumOfArgs(StringBuilder javaFile, List<MethodParameter> types, List<String> returnTypes, int numberOfParams) {
+		//Generator<MethodParameter> gen = CombinatoricsFactory.createPermutationWithRepetitionGenerator(originalVector, numberOfParams);
+		List<List<MethodParameter>> permutations = CombinatoricsUtil.createPermutationsWithRepetitionsRecursively(types, numberOfParams);
 		for (String returnTypeAsString : returnTypes) {
-			for (ICombinatoricsVector<MethodParameter> paramType : gen) {
-				if (paramType.getVector().get(0) == MethodParameter.OBJECT) {
-					String parameters = getParametersString(paramType, javaFile);
+			for (List<MethodParameter> paramTypes : permutations) {
+				if (paramTypes.get(0) == MethodParameter.OBJECT) {
+					String parameters = getParametersString(paramTypes, javaFile);
 					javaFile.append(NEWLINE_TAB).append(returnTypeAsString).append(getSignatureExclArgsAndReturn(returnTypeAsString)).append(parameters).append(END_OF_SIGNATURE);
 				}
 			}
 		}
 	}
 
-	private void generateInterfaceMethodCombinationsRecursively(StringBuilder javaFile,
-			ICombinatoricsVector<MethodParameter> originalVector, List<String> returnTypes, int numberOfParams) {
+	private void generateInterfaceMethodCombinationsRecursively(StringBuilder javaFile, List<MethodParameter> types, List<String> returnTypes, int numberOfParams) {
 		if (numberOfParams >= 0) {
 			javaFile.append(NEWLINE);
-			Generator<MethodParameter> gen = Factory.createPermutationWithRepetitionGenerator(originalVector, numberOfParams);
+			List<List<MethodParameter>> permutations = CombinatoricsUtil.createPermutationsWithRepetitionsRecursively(types, numberOfParams);//CombinatoricsFactory.createPermutationWithRepetitionGenerator(originalVector, numberOfParams);
 			for (String returnTypeAsString : returnTypes) {
-				generateInterfaceMethods(gen, returnTypeAsString, javaFile);
+				generateInterfaceMethods(permutations, returnTypeAsString, javaFile);
 			}
-			generateInterfaceMethodCombinationsRecursively(javaFile, originalVector, returnTypes, --numberOfParams);
+			generateInterfaceMethodCombinationsRecursively(javaFile, types, returnTypes, --numberOfParams);
 		}
 	}
 
-	private void generateInterfaceMethods(Generator<MethodParameter> gen, String returnTypeAsString, StringBuilder javaFile) {
+	private void generateInterfaceMethods(List<List<MethodParameter>> permutations, String returnTypeAsString, StringBuilder javaFile) {
 		javaFile.append(NEWLINE);
-		for (ICombinatoricsVector<MethodParameter> paramType : gen) {
-			String parameters = getParametersString(paramType, javaFile);
+		for (List<MethodParameter> paramTypes : permutations) {
+			String parameters = getParametersString(paramTypes, javaFile);
 			javaFile.append(NEWLINE_TAB).append(returnTypeAsString).append(getSignatureExclArgsAndReturn(returnTypeAsString)).append(parameters).append(END_OF_SIGNATURE);
 		}
 	}
 
-	private String getParametersString(ICombinatoricsVector<MethodParameter> paramType, StringBuilder javaFile) {
+	private String getParametersString(List<MethodParameter> paramTypes, StringBuilder javaFile) {
 		AtomicInteger atomicInteger = new AtomicInteger(1);
-		return paramType.getVector().stream()
+		return paramTypes.stream()
 				.map(t -> t.getTypeAsSourceCodeString() + " arg" + atomicInteger.getAndIncrement())
 				.collect(Collectors.joining(", "));
 	}
@@ -207,7 +203,7 @@ public class GenerateLambdaProcessor extends AbstractProcessor {
 		}
 	}
 	
-	static String getMethodName(String returnType){
+	public static String getMethodName(String returnType){
 		switch (returnType){
 		case "boolean": return METHOD_NAME_BOOLEAN;
 		case "byte": return METHOD_NAME_BYTE;
