@@ -15,12 +15,11 @@ Copyright 2016 Anders Granau Høfft
    limitations under the License.
  -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.github.hervian</groupId>
 	<artifactId>lambda-factory</artifactId>
-	<version>2.0.2-SNAPSHOT</version>
+	<version>2.0.2</version>
 	<packaging>jar</packaging>
 
 	<name>lambda-factory</name>
@@ -39,7 +38,7 @@ Copyright 2016 Anders Granau Høfft
 		<connection>scm:git:https://github.com/Hervian/safety-mirror.git</connection>
 		<url>http://github.com/hervian/safety-mirror</url>
 		<developerConnection>scm:git:https://github.com/Hervian/safety-mirror.git</developerConnection>
-		<tag>HEAD</tag>
+		<tag>lambda-factory-2.0.2</tag>
 	</scm>
 
 	<distributionManagement>
