@@ -34,6 +34,15 @@ Copyright 2016 Anders Granau Høfft
 		</license>
 	</licenses>
 
+	<developers>
+		<developer>
+			<id>anders</id>
+			<name>Anders Høfft</name>
+			<email>aghoefft@gmail.com</email>
+			<timezone>+2</timezone>
+		</developer>
+	</developers>
+
 	<scm>
 		<connection>scm:git:https://github.com/Hervian/safety-mirror.git</connection>
 		<url>http://github.com/hervian/safety-mirror</url>
@@ -73,7 +82,7 @@ Copyright 2016 Anders Granau Høfft
 		<dependency>
 			<groupId>com.github.hervian</groupId>
 			<artifactId>safety-mirror</artifactId>
-			<version>3.0.0-SNAPSHOT</version>
+			<version>3.0.0</version>
 		</dependency>
 	</dependencies>
 
