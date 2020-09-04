@@ -1,6 +1,7 @@
 package com.github.hervian.lambdas;
 
 import com.github.hervian.lambdas.util.MethodParameter;
+import com.github.hervian.reflection.Fun;
 
 import java.lang.reflect.Method;
 
@@ -74,6 +75,8 @@ public class PerformanceTest {
 	protected void instanceMethod(byte a){}
 	protected void instanceMethod(Object a){}
 
+	protected static String 	staticMethodForMethodReferenceTesting(Object a, int b)	{ return b>((String)a).length() ? "y" : "n"; }
+
 	 //Depending on your computer's speed you may want to increase or decrease the number of iterations:
 	private static final int 	ITERATIONS 	= 100_000_000;
 	private static final int 	WARM_UP 		= 100*3;
@@ -99,6 +102,8 @@ public class PerformanceTest {
 		test_double(warmup);
 		test_Object(warmup);
 		test_intArray(warmup);
+		testPerformanceOfLambdaCreatedViaMethodReferenceArgument(warmup);
+		testPerformanceOfLambdaCreatedViaMethodReferenceVsFun(warmup);
 		
 		float result = 0;
 		for (float ratio : lambdaOverDirect){
@@ -316,14 +321,64 @@ public class PerformanceTest {
 			printPerformance(int[].class.getSimpleName(), t0, t1, t2, t3);
 		lambdaOverDirect[8] = (float) (t1-t0)/ (t2-t1);
 	}
-	
-	private static void printPerformance(MethodParameter param, long t0, long t1, long t2, long t3) {
-		printPerformance(param.getType().getSimpleName(), t0, t1, t2, t3);
+
+	private static void testPerformanceOfLambdaCreatedViaMethodReferenceArgument(boolean warmup) throws Throwable{
+		MethodParameter param = MethodParameter.OBJECT;
+		String[] results = new String[3];
+		String arg = SOME_STRING;
+		Method method = PerformanceTest.class.getDeclaredMethod("staticMethodForMethodReferenceTesting", param.getType(), int.class);
+		Lambda lambda = LambdaFactory.create(PerformanceTest::staticMethodForMethodReferenceTesting);
+		long t0 = System.nanoTime();
+		for (int i = 0; i < (warmup ? WARM_UP : ITERATIONS); i++)
+			results[0] = (String) lambda.invoke_for_Object(arg, i);
+		long t1 = System.nanoTime();
+		for (int i = 0; i < (warmup ? WARM_UP : ITERATIONS); i++)
+			results[1] = staticMethod(arg, i);
+		long t2 = System.nanoTime();
+		for (int i = 0; i < (warmup ? WARM_UP : ITERATIONS); i++)
+			results[2] = (String) method.invoke(null, arg, i);
+		long t3 = System.nanoTime();
+		if (!warmup)
+			printPerformance("staticMethodForMethodReferenceTesting", param, t0, t1, t2, t3);
+		lambdaOverDirect[8] = (float) (t1-t0)/ (t2-t1);
+	}
+
+	private static void testPerformanceOfLambdaCreatedViaMethodReferenceVsFun(boolean warmup) throws Throwable{
+		MethodParameter param = MethodParameter.OBJECT;
+		String[] results = new String[3];
+		String arg = SOME_STRING;
+		Fun.With2Params<String, Object, Integer> fun = PerformanceTest::staticMethodForMethodReferenceTesting;
+		Lambda lambda = LambdaFactory.create(PerformanceTest::staticMethodForMethodReferenceTesting);
+		long t0 = System.nanoTime();
+		for (int i = 0; i < (warmup ? WARM_UP : ITERATIONS); i++)
+			results[0] = (String) lambda.invoke_for_Object(arg, i);
+		long t1 = System.nanoTime();
+		for (int i = 0; i < (warmup ? WARM_UP : ITERATIONS); i++)
+			results[1] = staticMethod(arg, i);
+		long t2 = System.nanoTime();
+		for (int i = 0; i < (warmup ? WARM_UP : ITERATIONS); i++)
+			results[2] = (String) fun.invoke(arg, i);
+		long t3 = System.nanoTime();
+		if (!warmup)
+			printPerformance("Fun vs Lambda created via MethodReference - staticMethodForMethodReferenceTesting", param, t0, t1, t2, t3);
+		lambdaOverDirect[8] = (float) (t1-t0)/ (t2-t1);
 	}
 	
+	private static void printPerformance(MethodParameter param, long t0, long t1, long t2, long t3) {
+		printPerformance("staticMethod", param, t0, t1, t2, t3);
+	}
+
+	private static void printPerformance(String methodName, MethodParameter param, long t0, long t1, long t2, long t3) {
+		printPerformance(methodName, param.getType().getSimpleName(), t0, t1, t2, t3);
+	}
+
 	private static void printPerformance(String firstArgSimpleName, long t0, long t1, long t2, long t3) {
-		System.out.printf("%1$26s\t %2$8s \tLambda: %3$.2fs, Direct: %4$.2fs, Reflection: %5$.2fs%n", 
-				"staticMethod("+firstArgSimpleName+", int)",":"+firstArgSimpleName, (t1 - t0) * 1e-9, (t2 - t1) * 1e-9, (t3 - t2) * 1e-9);
+		printPerformance("staticMethod",firstArgSimpleName, t0, t1, t2, t3);
+	}
+	
+	private static void printPerformance(String methodName, String firstArgSimpleName, long t0, long t1, long t2, long t3) {
+		System.out.printf("%1$26s\t %2$8s \tLambda: %3$.2fs, Direct: %4$.2fs, Reflection: %5$.2fs%n",
+				methodName + "("+firstArgSimpleName+", int)",":"+firstArgSimpleName, (t1 - t0) * 1e-9, (t2 - t1) * 1e-9, (t3 - t2) * 1e-9);
 	}
 	
 	

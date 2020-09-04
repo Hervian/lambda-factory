@@ -19,7 +19,7 @@ package com.github.hervian.lambdas.util;
  * @author Anders Granau Høfft
  */
 @GenerateLambda(
-		maxNumberOfParameters=2,
+		maxNumberOfParameters=3,
 		paramTypes = {MethodParameter.BOOLEAN,
 									MethodParameter.CHAR,
 									MethodParameter.SHORT,

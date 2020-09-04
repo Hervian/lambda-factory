@@ -43,6 +43,16 @@ public class LambdaFactoryTest extends TestCase {
 	private static int staticIntMethod(int a, int b){
 		return a+b;
 	}
+
+	@Test
+	public void testZeroParams() throws Throwable {
+		Lambda lambda = LambdaFactory.create(new LambdaFactoryTest()::returnString0Params);
+		assertEquals("hello world", lambda.invoke_for_Object(new LambdaFactoryTest()));
+	}
+
+	public String returnString0Params(){ return "hello world";}
+	public String returnString1Param(String p1){ return p1;}
+	public String returnString2Params(String p1, String p2){ return p1 + p2;}
 	
 	
 }

@@ -1,6 +1,7 @@
 package com.github.hervian.lambdas;
 
 import com.github.hervian.lambdas.util.GenerateLambdaProcessor;
+import com.github.hervian.reflection.Fun;
 
 import java.lang.invoke.CallSite;
 import java.lang.invoke.LambdaConversionException;
@@ -41,6 +42,55 @@ import java.lang.reflect.Modifier;
  * @author Anders Granau Høfft
  */
 public class LambdaFactory {
+
+	/**
+   * <pre>
+	 * Creates a {@link Lambda} from a Method Reference. Don't worry about the many overloaded methods.
+	 * Just know that you can create a Lambda from either a java.lang.Method or a double colon Method Reference,
+   * e.g. 'Lambda lambda = LambdaFactory.create(" hello world   "::trim);'
+   *
+   * Admittely, this method does not make much sense - if you have access to the Method Reference notation, you are better of using the safety-mirror project,
+   * which allows you to turn Method References of any kind into function objects. @see <a href="https://github.com/Hervian/safety-mirror">The JSON site</a>
+   * </pre>
+	 */
+	static <DUMMY> Lambda create(Fun.With0ParamsAndVoid<DUMMY> methodRef) throws Throwable { return create(methodRef.toMethod()); }
+
+	/**
+	 * @see #create(Fun.With0ParamsAndVoid)
+	 */
+	static <T1> Lambda create(Fun.With1ParamAndVoid<T1> methodRef) throws Throwable { return create(methodRef.toMethod()); }
+	/**
+	 * @see #create(Fun.With0ParamsAndVoid)
+	 */
+	static <T1, T2> Lambda create(Fun.With2ParamsAndVoid<T1, T2> methodRef) throws Throwable { return create(methodRef.toMethod()); }
+	/**
+	 * @see #create(Fun.With0ParamsAndVoid)
+	 */
+	static <T1, T2, T3> Lambda create(Fun.With3ParamsAndVoid<T1, T2, T3> methodRef) throws Throwable { return create(methodRef.toMethod()); }
+	/**
+	 * @see #create(Fun.With0ParamsAndVoid)
+	 */
+	static <T1, T2, T3, T4> Lambda create(Fun.With4ParamsAndVoid<T1, T2, T3, T4> methodRef) throws Throwable { return create(methodRef.toMethod()); }
+	/**
+	 * @see #create(Fun.With0ParamsAndVoid)
+	 */
+	static <T1, T2, T3, T4, T5> Lambda create(Fun.With5ParamsAndVoid<T1, T2, T3, T4, T5> methodRef) throws Throwable { return create(methodRef.toMethod()); }
+	/**
+	 * @see #create(Fun.With0ParamsAndVoid)
+	 */
+	static <T1, T2, T3, T4, T5, T6> Lambda create(Fun.With6ParamsAndVoid<T1, T2, T3, T4, T5, T6> methodRef) throws Throwable { return create(methodRef.toMethod()); }
+	/**
+	 * @see #create(Fun.With0ParamsAndVoid)
+	 */
+	static <T1, T2, T3, T4, T5, T6, T7> Lambda create(Fun.With7ParamsAndVoid<T1, T2, T3, T4, T5, T6, T7> methodRef) throws Throwable { return create(methodRef.toMethod()); }
+	/**
+	 * @see #create(Fun.With0ParamsAndVoid)
+	 */
+	static <T1, T2, T3, T4, T5, T6, T7, T8> Lambda create(Fun.With8ParamsAndVoid<T1, T2, T3, T4, T5, T6, T7, T8> methodRef) throws Throwable { return create(methodRef.toMethod()); }
+	/**
+	 * @see #create(Fun.With0ParamsAndVoid)
+	 */
+	static <T1, T2, T3, T4, T5, T6, T7, T8, T9> Lambda create(Fun.With9ParamsAndVoid<T1, T2, T3, T4, T5, T6, T7, T8, T9> methodRef) throws Throwable { return create(methodRef.toMethod()); }
 
 	/**
 	 * creates a Lambda with the same access rights as a Method with setAccessible()==true. 

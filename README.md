@@ -1,9 +1,24 @@
 # lambda-factory
-lambda-factory is a Java utility project that provides a fast alternative to Reflection. 
+*lambda-factory* is a Java utility project that provides a fast alternative to [Reflection](https://docs.oracle.com/javase/9/docs/api/java/lang/reflect/package-summary.html-based) based method invocation. 
+
+## Releases
+Available in [Maven Central](https://search.maven.org/search?q=g:%22com.github.hervian%22%3D%20AND%20a:%22lambda-factory%22%3D):
+```
+  <groupId>com.github.hervian</groupId>
+  <artifactId>lambda-factory</artifactId>
+  <version>2.0.2 (or see Maven Central or mvnrepository.com for newest version)</version>
+ </dependency>
+```
+Requires **Java 9** or above.
+
+## Overview
 
 The API consists of 2 types:  
   1. `LambdaFactory.create(java.lang.Method myMethod)` returns a dynamically generated Lambda implementation.  
   2. `Lambda.invoke_for_<return-type>(...)` which is **as fast as a direct method invocation**.
+     1. Or one of the overloaded alternatives, such as `LambdaFactory.create(MyClass::myAccessableMethod)` 
+     (but if you have access to the Method Reference notation you are probably better of
+     simply using the safety-mirror project than this project...)
 
 Here are some sample runtimes for 10E8 iterations (reproducable with the class PerformanceTest):
 
@@ -11,9 +26,58 @@ Parameters|Lambda|Direct|Reflection
 --- | --- | --- | ---
     (int, int)	 | 0.02s| 0.01s| 4.64s
  (Object, int)	 | 0.03s| 0.02s| 3.23s
+ 
+Do note that creating the Lambda object (`com.github.hervian.lambdas.Lambda`) is "time consuming" - 
+i.e above test results do not include the creation time of the Lambda object. 
 
 ## Requirements
-lambda-factory requires Java 1.8 or later.
+lambda-factory **requires Java 1.9 or later**.
+
+If you wish to use this project with *Java 8* you must clone the project and 
+1. change the pom.xml's properties section 
+such that source and target is set to 1.8 (instead of 1.9) and 
+1. delete the  module-info.java file.
+1. since the project has a dependency to a Java 9 module called *safety.mirror* you must either:
+   1. clone the [*safety-mirror*](https://github.com/Hervian/safety-mirror) github project and build it with java 8 
+   (this is quite easy, see guide on referenced project) and update your clone's dependency accordingly.
+   1. or delete the dependency to *safety-mirror* and the few convenience methods in `LambdaFactory.java` 
+   that makes use of the library.
+   
+After this you should be able to build using JDK-8.
+
+## Java 9+ setup guide...
+This project is built with *JDK-9* and is modularized in that in contains a module-info.java file.
+The module's name is `lambda.factory`.
+
+Since this library uses reflection to inspect your classes to do what it does you will need to grant it access 
+to read your code.  
+In Java 9 this is done by adding a command line argument to the Java command:   
+`--add-reads lambda.factory=your.module.name`
+
+If you do not add this option you will get a runtime exception when using the `LambdaFactory`'s *create(...)* method: `java.lang.IllegalAccessException: module lambda.factory does not read module`
+
+Remember to change *your.module.name* with the name of your module.  
+This command line option can be set up in your IDE such that it is used whenever you run you application via the IDEA. 
+In IntelliJ this is done via the menu Run -> Edit configurations. 
+Here you must enter the command line option in the text box for VM options.
+
+
+## Java 9+ setup guide...
+This project is built with *JDK-9* and is modularized in that in contains a module-info.java file.
+The module's name is `lambda.factory`.
+
+Since this library uses reflection to inspect your classes to do what it does you will need to grant it access 
+to read your code.  
+In Java 9 this is done by adding a command line argument to the Java command:   
+`--add-reads lambda.factory=your.module.name`
+
+If you do not add this option you will get a runtime exception when using the `LambdaFactory`'s *create(...)* method: `java.lang.IllegalAccessException: module lambda.factory does not read module`
+
+Remember to change *your.module.name* with the name of your module.  
+This command line option can be set up in your IDE such that it is used whenever you run you application via the IDEA. 
+In IntelliJ this is done via the menu Run -> Edit configurations. 
+Here you must enter the command line option in the text box for VM options.
+
 
 ## Using lambda-factory
 Let's say we have a class called `MyClass`, which defines the following methods:  
@@ -31,9 +95,13 @@ String result = (String) lambda.invoke_for_Object(1000, (Integer) 565); //Don't 
 Method method = MyClass.class.getDeclaredMethod("myInstanceMethod", String.class, Boolean.class);
 Lambda lambda = LambdaFactory.create(method);
 float result = lambda.invoke_for_float(new MyClass(), "Hello", (Boolean) null);  //No need to cast primitive results!
+
+Lambda lambda = LambdaFactory.create(MyClass::myStaticMethod); //The overloaded create method accepts Method References!
+String result = (String) lambda.invoke_for_Object(1000, (Integer) 565);
 ```
 
-Notice that when invoking the lambda, you must choose an invocation method that contains the target method's return type in its name. In the example above, the chosen `invoke_for_float` method indicates that we are invoking a method, which returns a `float`. If the method you are trying to access returns fx a String, a boxed primitive (Integer, Boolean etc) or some custom Object, you would call `invoke_for_Object`. There are 10 invoke methods:  
+Notice that the overloaded create method can accept either a Method object, or a double colon Method Reference.  
+Also, notice that when invoking the lambda, you must choose an invocation method that contains the target method's return type in its name. In the example above, the chosen `invoke_for_float` method indicates that we are invoking a method, which returns a `float`. If the method you are trying to access returns fx a String, a boxed primitive (Integer, Boolean etc) or some custom Object, you would call `invoke_for_Object`. There are 10 invoke methods:  
 * `invoke_for_Object`
 * `invoke_for_void`
 * `invoke_for_boolean`
@@ -46,7 +114,7 @@ Notice that when invoking the lambda, you must choose an invocation method that 
 * `invoke_for_double`
 
 Remember not to rely on autoboxing when passing arguments to the invocation method. If your method expects an Integer, and you pass an int, you will get an ´AbstractMethodException´.  
-There are 8 `create(...)` methods:
+There are several, overloaded `create(...)` methods:
 
 * `Lambda create(Method method)`
 * `Lambda create(Method method, MethodHandles.Lookup lookup)`
