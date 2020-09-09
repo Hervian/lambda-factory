@@ -6,7 +6,7 @@ Available in [Maven Central](https://search.maven.org/search?q=g:%22com.github.h
 ```
   <groupId>com.github.hervian</groupId>
   <artifactId>lambda-factory</artifactId>
-  <version>2.0.2 (or see Maven Central or mvnrepository.com for newest version)</version>
+  <version>2.0.3 (or see Maven Central or mvnrepository.com for newest version)</version>
  </dependency>
 ```
 Requires **Java 9** or above.
