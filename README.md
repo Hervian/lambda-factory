@@ -4,10 +4,11 @@
 ## Releases
 Available in [Maven Central](https://search.maven.org/search?q=g:%22com.github.hervian%22%3D%20AND%20a:%22lambda-factory%22%3D) and [mvnrepository.com](https://mvnrepository.com/artifact/com.github.hervian/lambda-factory):
 ```
+<dependency>
   <groupId>com.github.hervian</groupId>
   <artifactId>lambda-factory</artifactId>
   <version>2.0.3 (or see Maven Central or mvnrepository.com for newest version)</version>
- </dependency>
+</dependency>
 ```
 Requires **Java 9** or above.
 
@@ -60,24 +61,6 @@ Remember to change *your.module.name* with the name of your module.
 This command line option can be set up in your IDE such that it is used whenever you run you application via the IDEA. 
 In IntelliJ this is done via the menu Run -> Edit configurations. 
 Here you must enter the command line option in the text box for VM options.
-
-
-## Java 9+ setup guide...
-This project is built with *JDK-9* and is modularized in that in contains a module-info.java file.
-The module's name is `lambda.factory`.
-
-Since this library uses reflection to inspect your classes to do what it does you will need to grant it access 
-to read your code.  
-In Java 9 this is done by adding a command line argument to the Java command:   
-`--add-reads lambda.factory=your.module.name`
-
-If you do not add this option you will get a runtime exception when using the `LambdaFactory`'s *create(...)* method: `java.lang.IllegalAccessException: module lambda.factory does not read module`
-
-Remember to change *your.module.name* with the name of your module.  
-This command line option can be set up in your IDE such that it is used whenever you run you application via the IDEA. 
-In IntelliJ this is done via the menu Run -> Edit configurations. 
-Here you must enter the command line option in the text box for VM options.
-
 
 ## Using lambda-factory
 Let's say we have a class called `MyClass`, which defines the following methods:  
