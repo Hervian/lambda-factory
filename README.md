@@ -2,7 +2,7 @@
 *lambda-factory* is a Java utility project that provides a fast alternative to [Reflection](https://docs.oracle.com/javase/9/docs/api/java/lang/reflect/package-summary.html-based) based method invocation. 
 
 ## Releases
-Available in [Maven Central](https://search.maven.org/search?q=g:%22com.github.hervian%22%3D%20AND%20a:%22lambda-factory%22%3D):
+Available in [Maven Central](https://search.maven.org/search?q=g:%22com.github.hervian%22%3D%20AND%20a:%22lambda-factory%22%3D) and [mvnrepository.com](https://mvnrepository.com/artifact/com.github.hervian/lambda-factory):
 ```
   <groupId>com.github.hervian</groupId>
   <artifactId>lambda-factory</artifactId>
@@ -18,14 +18,14 @@ The API consists of 2 types:
   2. `Lambda.invoke_for_<return-type>(...)` which is **as fast as a direct method invocation**.
      1. Or one of the overloaded alternatives, such as `LambdaFactory.create(MyClass::myAccessableMethod)` 
      (but if you have access to the Method Reference notation you are probably better of
-     simply using the safety-mirror project than this project...)
+     using the [safety-mirror](https://github.com/Hervian/safety-mirror) project..)
 
 Here are some sample runtimes for 10E8 iterations (reproducable with the class PerformanceTest):
 
 Parameters|Lambda|Direct|Reflection
 --- | --- | --- | ---
     (int, int)	 | 0.02s| 0.01s| 4.64s
- (Object, int)	 | 0.03s| 0.02s| 3.23s
+    (Object, int)	 | 0.03s| 0.02s| 3.23s
  
 Do note that creating the Lambda object (`com.github.hervian.lambdas.Lambda`) is "time consuming" - 
 i.e above test results do not include the creation time of the Lambda object. 
